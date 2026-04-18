@@ -1,262 +1,273 @@
 import { useState } from 'react';
 import { 
   Mail, 
-  Lock, 
   Eye, 
   EyeOff, 
-  ArrowRight, 
-  Github, 
-  Chrome,
-  LayoutDashboard
+  User,
+  Building2
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
+  const [isSignUp, setIsSignUp] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({ 
+    firstName: '',
+    lastName: '',
     email: '', 
     password: '',
-    fullName: '',
-    year: ''
+    confirmPassword: '',
+    rememberMe: false
   });
 
-  const handleSubmit = (
-      /** @type {import('react').FormEvent<HTMLFormElement>} */ e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (isSignUp) {
+      if(formData.password !== formData.confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+      const user = { name: formData.firstName || 'User', email: formData.email };
+      localStorage.setItem('user', JSON.stringify(user));
       console.log('Signing up with:', formData);
+      navigate('/dashboard');
     } else {
-      console.log('Logging in with:', formData);
+      const userName = formData.email ? formData.email.split('@')[0] : 'User';
+      const user = { name: userName, email: formData.email };
+      localStorage.setItem('user', JSON.stringify(user));
+      console.log('Logging in with:', { email: formData.email, password: formData.password });
+      navigate('/dashboard');
     }
   };
 
+  const handleGoogleLogin = () => {
+    const user = { name: 'Estin Student', email: 'student@estin.dz' };
+    localStorage.setItem('user', JSON.stringify(user));
+    console.log('Logging in with Google@estin.dz');
+    navigate('/dashboard');
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
-      {/* Main Card Container */}
-      <div className="max-w-5xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+    <div className="min-h-screen relative font-sans overflow-hidden bg-slate-900">
+      {/* Background Image Setup */}
+      {/* Use one of the provided background images, falling back to a campus-like image structure */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center z-0" 
+        style={{ backgroundImage: `url('/background.png')` }}
+      >
+        {/* The overlay is mostly transparent on the left and has a darker blue gradient towards the right/center */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#1a365d]/50 to-[#1e3a8a]/90 mix-blend-multiply"></div>
+      </div>
+
+      <div className="relative z-10 min-h-screen flex flex-col justify-between p-6">
         
-        {/* Left Side: Aesthetic Branding/Info */}
-        <div className="hidden md:flex md:w-1/2 bg-indigo-600 p-12 flex-col justify-between text-white relative overflow-hidden">
-          {/* Decorative Background Elements */}
-          <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-50"></div>
-          <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-64 h-64 bg-blue-400 rounded-full blur-3xl opacity-30"></div>
+        {/* Header */}
+        <header className="flex items-center gap-2 text-white p-4">
+          <Building2 className="w-8 h-8" />
+          <span className="text-2xl font-bold tracking-wider">UniSpace</span>
+        </header>
 
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-8">
-              <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
-                <LayoutDashboard className="w-8 h-8 text-white" />
-              </div>
-              <span className="text-2xl font-bold tracking-tight">Unispace</span>
-            </div>
-            <h1 className="text-4xl font-bold leading-tight mb-4">
-              Design your universe, <br />one space at a time.
-            </h1>
-            <p className="text-indigo-100 text-lg">
-              The all-in-one workspace for professional teams to collaborate, innovate, and ship faster.
-            </p>
-          </div>
-
-          <div className="relative z-10">
-            <div className="flex -space-x-3 mb-4">
-              {[1, 2, 3, 4].map((i) => (
-                <img
-                  key={i}
-                  className="w-10 h-10 rounded-full border-2 border-indigo-600 object-cover"
-                  src={`https://i.pravatar.cc/150?u=${i + 20}`}
-                  alt="User"
-                />
-              ))}
-              <div className="w-10 h-10 rounded-full border-2 border-indigo-600 bg-indigo-400 flex items-center justify-center text-xs font-medium">
-                +2k
-              </div>
-            </div>
-            <p className="text-sm text-indigo-100 italic">
-              &quot;Unispace has completely transformed how our remote team operates.&quot;
-            </p>
-          </div>
-        </div>
-
-        {/* Right Side: Login Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-16">
-          <div className="max-w-md mx-auto">
-          <div className="mb-10">
-              <h2 className="text-3xl font-bold text-slate-900 mb-2">
-                {isSignUp ? 'Join Unispace' : 'Welcome back'}
-              </h2>
-              <p className="text-slate-500">
-                {isSignUp ? 'Create your account to get started.' : 'Please enter your details to sign in.'}
-              </p>
-            </div>
-
-            {/* Social Logins */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <button className="flex items-center justify-center gap-2 py-2.5 px-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all duration-200 font-medium text-slate-700">
-                <Chrome className="w-5 h-5 text-red-500" />
-                Google
-              </button>
-              <button className="flex items-center justify-center gap-2 py-2.5 px-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all duration-200 font-medium text-slate-700">
-                <Github className="w-5 h-5 text-slate-900" />
-                Github
-              </button>
-            </div>
-
-            <div className="relative mb-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">Or continue with email</span>
-              </div>
-            </div>
+        {/* Main Content Area */}
+        <main className="flex-grow flex items-center justify-center py-10">
+          
+          {/* Glassmorphism Card */}
+          <div className="w-full max-w-lg bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl shadow-2xl p-8 sm:p-12 text-white">
+            <h2 className="text-3xl font-bold text-center mb-10 tracking-widest uppercase">
+              {isSignUp ? 'Sign-Up' : 'Log In'}
+            </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Full Name Input - Sign Up Only */}
+              
               {isSignUp && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
-                  <input
-                    type="text"
-                    required
-                    className="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                    placeholder="John Doe"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                  />
+                <div className="flex flex-col sm:flex-row gap-6">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      name="firstName"
+                      required
+                      placeholder="FIRST NAME"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-b border-white/60 py-2 pr-8 text-white placeholder-white/80 focus:outline-none focus:border-white transition-colors uppercase text-sm"
+                    />
+                    <User className="absolute right-0 bottom-2 w-5 h-5 text-white/80" />
+                  </div>
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      name="lastName"
+                      required
+                      placeholder="LAST NAME"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-b border-white/60 py-2 pr-8 text-white placeholder-white/80 focus:outline-none focus:border-white transition-colors uppercase text-sm"
+                    />
+                    <User className="absolute right-0 bottom-2 w-5 h-5 text-white/80" />
+                  </div>
                 </div>
               )}
 
-              {/* Email Input */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-                  </div>
+              <div className="relative">
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="EMAIL"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full bg-transparent border-b border-white/60 py-2 pr-8 text-white placeholder-white/80 focus:outline-none focus:border-white transition-colors uppercase text-sm"
+                />
+                <Mail className="absolute right-0 bottom-2 w-5 h-5 text-white/80" />
+              </div>
+
+              <div className="relative">
+                <div className="relative">
                   <input
-                    type="email"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
                     required
-                    className="block w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                    placeholder="name@company.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    placeholder="PASSWORD"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="w-full bg-transparent border-b border-white/60 py-2 pr-8 text-white placeholder-white/80 focus:outline-none focus:border-white transition-colors uppercase text-sm"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-0 bottom-2 text-white/80 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                  </button>
+                </div>
+                
+                {/* Forgot Password aligns under password in Sign Up, or under login password */}
+                <div className="flex justify-end mt-1">
+                  <a href="#" className="text-[11px] text-white/80 hover:text-white transition-colors">
+                    Forgot Password ?
+                  </a>
                 </div>
               </div>
 
-              {/* Year Input - Sign Up Only */}
               {isSignUp && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Year</label>
-                  <select
-                    required
-                    className="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-slate-900"
-                    value={formData.year}
-                    onChange={(e) => setFormData({...formData, year: e.target.value})}
-                  >
-                    <option value="">Select your year</option>
-                    <option value="1st">1st Year</option>
-                    <option value="2nd">2nd Year</option>
-                    <option value="3rd">3rd Year</option>
-                    <option value="4th">4th Year</option>
-                    <option value="postgrad">Postgraduate</option>
-                  </select>
-                </div>
-              )}
-
-              {/* Password Input */}
-              {!isSignUp && (
-                <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="block text-sm font-medium text-slate-700">Password</label>
-                    <a href="#" className="text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition-colors">
-                      Forgot password?
-                    </a>
-                  </div>
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-                    </div>
+                <div className="relative">
+                  <div className="relative">
                     <input
-                      type={showPassword ? "text" : "password"}
+                      type={showConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
                       required
-                      className="block w-full pl-10 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
+                      placeholder="CONFIRM PASSWORD"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-b border-white/60 py-2 pr-8 text-white placeholder-white/80 focus:outline-none focus:border-white transition-colors uppercase text-sm"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-0 bottom-2 text-white/80 hover:text-white transition-colors"
                     >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Create Password Input - Sign Up Only */}
-              {isSignUp && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-                    </div>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      required
-                      className="block w-full pl-10 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  name="rememberMe"
+                  checked={formData.rememberMe}
+                  onChange={handleInputChange}
+                  className="w-4 h-4 rounded border-white/60 bg-transparent text-[#67a8ff] focus:ring-[#67a8ff] focus:ring-offset-0 cursor-pointer accent-[#67a8ff]"
+                />
+                <label htmlFor="rememberMe" className="text-xs text-white/90 cursor-pointer">
+                  Remember Me
+                </label>
+              </div>
 
-              {/* Remember Me - Sign In Only */}
-              {!isSignUp && (
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded cursor-pointer"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-600 cursor-pointer">
-                    Remember me for 30 days
-                  </label>
-                </div>
-              )}
+              <div className="pt-2 flex justify-center">
+                <button
+                  type="submit"
+                  className="w-48 bg-[#82b5ff] hover:bg-[#67a8ff] text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-colors tracking-wide"
+                >
+                  {isSignUp ? 'SIGN-UP' : 'LOG IN'}
+                </button>
+              </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-indigo-200 transition-all duration-200 active:scale-[0.98]"
-              >
-                {isSignUp ? 'Create Account' : 'Sign in to Unispace'}
-                <ArrowRight className="w-5 h-5" />
-              </button>
             </form>
 
-            <p className="mt-8 text-center text-slate-600">
-              {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-              <button
-                onClick={() => setIsSignUp(!isSignUp)}
-                className="font-bold text-indigo-600 hover:text-indigo-500 transition-colors cursor-pointer bg-none border-none p-0"
-              >
-                {isSignUp ? 'Sign in' : 'Create an account'}
-              </button>
-            </p>
+            <div className="mt-6 text-center space-y-4">
+              <div className="text-sm">
+                <span className="text-white/90">
+                  {isSignUp ? 'Already have an existing account ' : 'Don\'t have an account? '}
+                </span>
+                <button
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className="text-[#67a8ff] hover:text-[#82b5ff] font-bold uppercase transition-colors"
+                >
+                  {isSignUp ? 'LOG IN' : 'SIGN UP'}
+                </button>
+              </div>
+
+              <div className="text-white/80 text-sm">
+                - Or -
+              </div>
+
+              <div className="flex justify-center">
+                <button 
+                  onClick={handleGoogleLogin}
+                  className="bg-white/90 hover:bg-white text-[#67a8ff] font-semibold py-2.5 px-6 rounded-lg transition-colors text-sm w-full sm:w-auto shadow-md"
+                >
+                  Login with Google@estin.dz
+                </button>
+              </div>
+            </div>
+
           </div>
-        </div>
+        </main>
+
+        {/* Footer Links */}
+        <footer className="text-white/70 text-xs flex flex-wrap justify-center sm:justify-between items-center px-4 py-6 gap-y-4">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-12">
+            <div className="flex flex-col gap-2 uppercase tracking-wider">
+              <a href="#" className="hover:text-white transition-colors">Feedback</a>
+              <a href="#" className="hover:text-white transition-colors">Report an issue</a>
+            </div>
+            <div className="flex flex-col gap-2 uppercase tracking-wider">
+              <a href="#" className="hover:text-white transition-colors">Help Center</a>
+              <a href="#" className="hover:text-white transition-colors">FAQs</a>
+            </div>
+          </div>
+
+          <div className="text-center text-white/50 space-y-1">
+            <div className="uppercase tracking-wider hover:text-white transition-colors cursor-pointer">
+              LEGAL
+            </div>
+            <div className="uppercase tracking-wider">
+              <a href="#" className="hover:text-white transition-colors">Terms</a>
+              <span className="mx-2">|</span>
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            </div>
+            <div className="pt-2 text-[10px]">
+              &copy; 2024 UniSpace. All rights reserved
+            </div>
+          </div>
+
+          <div className="uppercase tracking-wider hover:text-white transition-colors cursor-pointer">
+            Connect
+          </div>
+        </footer>
+
       </div>
     </div>
   );
