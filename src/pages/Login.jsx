@@ -6,11 +6,12 @@ import {
   User,
   Building2
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [isSignUp, setIsSignUp] = useState(true);
+  const location = useLocation();
+  const [isSignUp, setIsSignUp] = useState(location.state?.isSignUp !== false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({ 
@@ -150,12 +151,14 @@ const Login = () => {
                   </button>
                 </div>
                 
-                {/* Forgot Password aligns under password in Sign Up, or under login password */}
-                <div className="flex justify-end mt-1">
-                  <a href="#" className="text-[11px] text-white/80 hover:text-white transition-colors">
-                    Forgot Password ?
-                  </a>
-                </div>
+                {/* Forgot Password only shows in Log In mode */}
+                {!isSignUp && (
+                  <div className="flex justify-end mt-1">
+                    <Link to="/forgot-password" className="text-[11px] text-white/80 hover:text-white transition-colors">
+                      Forgot Password ?
+                    </Link>
+                  </div>
+                )}
               </div>
 
               {isSignUp && (

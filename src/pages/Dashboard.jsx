@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  School, LayoutDashboard, Calendar, TrendingUp,
-  Search, Building, VolumeX, Clock, Star, LogOut
+  School, LayoutDashboard, Calendar, Map,
+  Search, Building, VolumeX, Clock, Star, LogOut, Settings
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const [user, setUser] = useState({ name: 'Mounia Kadi', email: 'Estin Student' });
+  const [showSettings, setShowSettings] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -68,31 +69,53 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-white/5 cursor-pointer transition-colors font-medium">
-              <TrendingUp className="w-[20px] h-[20px]" />
-              <span className="text-[15px]">Analytics</span>
+              <Map className="w-[20px] h-[20px]" />
+              <span className="text-[15px]">Interactive Map</span>
             </div>
 
           </nav>
         </div>
 
         {/* User Profile */}
-        <div className="px-6 flex items-center justify-between mt-auto">
+        <div className="px-6 flex items-center justify-between mt-auto relative">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 text-blue-300 flex items-center justify-center font-bold tracking-wider text-sm shadow-[0_0_15px_rgba(59,130,246,0.2)] border border-blue-500/30">
               {user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
             </div>
-            <div>
-              <p className="text-[13px] font-bold text-slate-200 leading-tight">{user.name}</p>
-              <p className="text-[11px] text-slate-500 font-medium">{user.email}</p>
+            <div className="max-w-[100px]">
+              <p className="text-[13px] font-bold text-slate-200 leading-tight truncate">{user.name}</p>
+              <p className="text-[11px] text-slate-500 font-medium truncate">{user.email}</p>
             </div>
           </div>
-          <button 
-            onClick={handleLogout}
-            className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-            title="Log out"
-          >
-            <LogOut size={18} />
-          </button>
+          <div className="flex items-center gap-0.5">
+            <div className="relative">
+              <button 
+                onClick={() => setShowSettings(!showSettings)}
+                className={`p-2 rounded-lg transition-colors ${showSettings ? 'text-blue-400 bg-blue-500/10' : 'text-slate-400 hover:text-blue-400 hover:bg-blue-500/10'}`}
+                title="Settings"
+              >
+                <Settings size={18} />
+              </button>
+              
+              {showSettings && (
+                <div className="absolute bottom-full right-0 mb-2 w-32 bg-[#1a1c23] border border-white/10 rounded-xl shadow-xl py-1.5 z-50 overflow-hidden backdrop-blur-xl">
+                  <button className="w-full text-left px-4 py-2 text-[13px] text-slate-300 hover:text-white hover:bg-white/5 transition-colors">
+                    My Profile
+                  </button>
+                  <button className="w-full text-left px-4 py-2 text-[13px] text-slate-300 hover:text-white hover:bg-white/5 transition-colors">
+                    Settings
+                  </button>
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+              title="Log out"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
         </div>
       </aside>
 

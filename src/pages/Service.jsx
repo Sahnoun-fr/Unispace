@@ -87,11 +87,18 @@ const Service = () => {
               )}
             </div>
           ) : (
-            <Link to="/login">
-              <button className="bg-white text-[#334E68] px-8 py-2.5 rounded-full font-bold text-xs uppercase shadow-md hover:bg-white hover:text-[#1a365d] transition-all">
-                SIGN-UP
-              </button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link to="/login" state={{ isSignUp: false }}>
+                <button className="bg-[#5D7B9D] text-white px-8 py-2.5 rounded-full font-bold text-xs uppercase shadow-md hover:bg-[#4A6482] transition-all">
+                  LOG IN
+                </button>
+              </Link>
+              <Link to="/login" state={{ isSignUp: true }}>
+                <button className="bg-white text-[#334E68] px-8 py-2.5 rounded-full font-bold text-xs uppercase shadow-md hover:bg-white hover:text-[#1a365d] transition-all">
+                  SIGN-UP
+                </button>
+              </Link>
+            </div>
           )}
         </nav>
 
